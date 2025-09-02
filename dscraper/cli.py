@@ -5,6 +5,8 @@ from .db import init_engine, init_db
 from .meta_client import fetch_ads
 from .persist import upsert_ad
 from .scorer import compute_scores
+from .exporters import export_csv
+
 
 app = typer.Typer(help="Dropshipping Ad Scraper CLI")
 
@@ -40,6 +42,15 @@ def score():
     init_engine(DB_URL)
     compute_scores()
     typer.echo("✅ Scores computed.")
+    
+@app.command()
+def export(out: str = "out/ads.csv"):
+    """Export ads (with one creative + score) to a CSV file."""
+    from .config import DB_URL
+    from .db import init_engine
+    init_engine(DB_URL)
+    export_csv(out)
+    typer.echo(f"✅ Exported to {out}")
 
 if __name__ == "__main__":
     app()
